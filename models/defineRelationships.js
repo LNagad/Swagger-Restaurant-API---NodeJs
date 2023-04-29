@@ -4,6 +4,7 @@ const ingredient = require("./ingredient");
 const dishes = require("./dish");
 const table = require("./table");
 const order = require("./order");
+const user = require("./user");
 
 const defineRelationships = async () => {
   // Definir la relación many-to-many
@@ -16,7 +17,7 @@ const defineRelationships = async () => {
   dishes.belongsToMany(order, { through: "DishOrder" });
   order.belongsToMany(dishes, { through: "DishOrder" });
 
-  await sequelize.sync({ force: true });
+  await sequelize.sync({ alter: false });
 };
 
 module.exports = defineRelationships;
