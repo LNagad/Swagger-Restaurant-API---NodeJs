@@ -30,8 +30,8 @@ exports.signup = async (req, res, next) => {
     }
 
     const passwordHashed = await bcrypt.hashSync(password, 12);
-
-    const userRole = isAdmin ? ROLES.ADMIN_ROLE : ROLES.WAITER_ROLE;
+    console.log(isAdmin);
+    const userRole = isAdmin == true ? ROLES.ADMIN_ROLE : ROLES.WAITER_ROLE;
 
     const user = await userModel.create({
       email: email,
@@ -86,7 +86,7 @@ exports.login = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { email: userExist.email, userId: userExist.id },
+      { email: userExist.email, userId: userExist.id, role: userExist.role },
       "secret",
       { expiresIn: "1h" }
     );

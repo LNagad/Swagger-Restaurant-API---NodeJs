@@ -4,6 +4,8 @@ const { authenticateDb } = require("./database/authenticateDb");
 const bodyParser = require("body-parser");
 
 const authRoutes = require("./routes/auth");
+const ingredientsRoute = require("./routes/ingredients");
+const dishesRoute = require("./routes/dishes");
 
 const app = express();
 
@@ -20,17 +22,19 @@ app.use((req, res, next) => {
 });
 
 app.use("/auth", authRoutes);
+app.use(ingredientsRoute);
+app.use(dishesRoute);
 
 app.use((error, req, res, next) => {
   //TODO: Log the error to a file or database
 
   console.log(error);
 
-  const message = error.message;
+  const message = error?.message;
 
   const statusCode = error.statusCode || 500;
 
-  const data = error.data;
+  const data = error?.data;
 
   res.status(statusCode).json({ message, data });
 });
