@@ -6,17 +6,7 @@ const { isAuth, isAdmin } = require("../middleware/is-auth");
 
 const dishesController = require("../controllers/dishesController");
 
-// Función que genera la validación de los campos
-const validateFields = (fields) => {
-  return fields.map((field) =>
-    body(field.name)
-      .trim()
-      .notEmpty()
-      .withMessage(`${field.label} field is required`)
-      .isLength({ min: field.min || 5 })
-      .withMessage(`${field.label} field must be at least 5 characters long`)
-  );
-};
+const { notEmptyFields } = require("../helpers/routesValidationFields");
 
 const ingredientsValidation = (isEdit) => {
   return body("ingredients")
@@ -54,7 +44,7 @@ router.post(
   "/dishes",
   isAuth,
   isAdmin,
-  validateFields([
+  notEmptyFields([
     { name: "name", label: "Name" },
     { name: "price", label: "Price", min: 3 },
     { name: "servings", label: "Number of servings", min: 1 },
@@ -68,7 +58,7 @@ router.put(
   "/dishes/:dishId",
   isAuth,
   isAdmin,
-  validateFields([
+  notEmptyFields([
     { name: "name", label: "Name" },
     { name: "price", label: "Price", min: 3 },
     { name: "servings", label: "Number of servings", min: 1 },
