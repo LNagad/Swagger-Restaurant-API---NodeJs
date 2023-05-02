@@ -9,7 +9,31 @@ const dishesRoute = require("./routes/dishes");
 const tablesRoute = require("./routes/tables");
 const ordersRoute = require("./routes/orders");
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsDoc = require("swagger-jsdoc");
+
 const app = express();
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: "Restaurant API",
+      version: "1.0.0",
+    },
+  },
+  securityDefinitions: {
+    bearerAuth: {
+      type: "bearer",
+      name: "Authorization",
+      in: "header",
+      example:
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+    },
+  },
+  apis: ["./routes/auth.js", "./routes/dishes.js", "./routes/orders.js"],
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 app.use(bodyParser.json());
 
@@ -22,6 +46,8 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use("/auth", authRoutes);
 app.use(ingredientsRoute);
