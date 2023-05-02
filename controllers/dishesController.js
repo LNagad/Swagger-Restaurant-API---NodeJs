@@ -1,5 +1,5 @@
 const dishes = require("../models/dish");
-const ingredientsModel = require("../models/ingredient");
+const Ingredients = require("../models/ingredient");
 const { validationResult } = require("express-validator");
 
 exports.create = async (req, res, next) => {
@@ -24,14 +24,11 @@ exports.create = async (req, res, next) => {
 
     // Guardar los ingredientes relacionados con el plato
 
-    await Promise.all(
-      ingredients.new.map(async (ingredient) => {
-        const foundIngredient = await ingredientsModel.findByPk(ingredient);
-        if (foundIngredient) {
-          await result.addIngredient(foundIngredient);
-        }
-      })
-    );
+    const foundIngredients = await Ingredients.findAll({
+      where: { id: ingredients },
+    });
+
+    await result.addIngredients(foundIngredients);
 
     result.ingredients = await result.getIngredients({ raw: true });
 
@@ -75,15 +72,12 @@ exports.update = async (req, res, next) => {
 
     const result = await dishFound.save();
 
-    const [newIngredients, oldIngredients] = await Promise.all([
-      ingredientsModel.findAll({ where: { id: ingredients.new } }),
-      ingredientsModel.findAll({ where: { id: ingredients.old } }),
-    ]);
+    const newIngredients = await Ingredients.findAll({
+      where: { id: ingredients },
+    });
 
-    await Promise.all([
-      result.removeIngredients(oldIngredients),
-      result.setIngredients(newIngredients),
-    ]);
+    await result.removeIngredients();
+    await result.setIngredients(newIngredients);
 
     result.ingredients = await result.getIngredients({ raw: true });
 

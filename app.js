@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth");
 const ingredientsRoute = require("./routes/ingredients");
 const dishesRoute = require("./routes/dishes");
 const tablesRoute = require("./routes/tables");
+const ordersRoute = require("./routes/orders");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/auth", authRoutes);
 app.use(ingredientsRoute);
 app.use(dishesRoute);
 app.use(tablesRoute);
+app.use(ordersRoute);
 
 app.use((error, req, res, next) => {
   //TODO: Log the error to a file or database

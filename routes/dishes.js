@@ -8,29 +8,16 @@ const dishesController = require("../controllers/dishesController");
 
 const { notEmptyFields } = require("../helpers/routesValidationFields");
 
-const ingredientsValidation = (isEdit) => {
+const ingredientsValidation = () => {
   return body("ingredients")
-    .exists()
-    .withMessage("Ingredients is required")
-    .isObject()
-    .withMessage("Ingredients must be an object")
-    .custom((value) => {
-      if (!value.new || value.new.length < 1) {
-        throw new Error(
-          "Invalid ingredients property, needs to send new ingredients list"
-        );
-      }
-      if (isEdit) {
-        if (
-          !value.old ||
-          value.old.length < 1 ||
-          !value.new ||
-          value.new.length < 1
-        ) {
-          throw new Error(
-            "Invalid ingredients property, needs to send old ingredients list"
-          );
-        }
+    .isArray()
+    .withMessage("ingredients must be an array")
+    .isLength({ min: 1 })
+    .withMessage("ingredients array must contain at least one element")
+    .custom((dishes) => {
+      const invalidIds = dishes.filter((id) => !Number.isInteger(id));
+      if (invalidIds.length) {
+        throw new Error(`Invalid ingredients IDs: ${invalidIds.join(",")}`);
       }
       return true;
     });
@@ -50,7 +37,7 @@ router.post(
     { name: "servings", label: "Number of servings", min: 1 },
     { name: "category", label: "Category" },
   ]),
-  ingredientsValidation(false),
+  ingredientsValidation(),
   dishesController.create
 );
 
@@ -64,7 +51,7 @@ router.put(
     { name: "servings", label: "Number of servings", min: 1 },
     { name: "category", label: "Category" },
   ]),
-  ingredientsValidation(true),
+  ingredientsValidation(),
   dishesController.update
 );
 router.patch(
