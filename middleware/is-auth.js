@@ -42,7 +42,7 @@ exports.isAuth = async (req, res, next) => {
 
     next();
   } catch (error) {
-    error.statusCode || 401;
+    error.statusCode = error.statusCode || 401;
     next(error);
   }
 };
