@@ -13,13 +13,14 @@ exports.create = async (req, res, next) => {
       throw error;
     }
 
-    const { name, price, servings, ingredients, category } = req.body;
+    const { name, price, servings, ingredients, category, dishImg } = req.body;
 
     const result = await dishes.create({
       name,
       price,
       number_of_servings: servings,
       category,
+      img: dishImg
     });
 
     // Guardar los ingredientes relacionados con el plato
@@ -52,7 +53,7 @@ exports.update = async (req, res, next) => {
       error.data = errors.array();
       throw error;
     }
-    const { name, price, servings, ingredients, category } = req.body;
+    const { name, price, servings, ingredients, category, dishImg } = req.body;
 
     const dishId = req.params.dishId;
 
@@ -69,6 +70,8 @@ exports.update = async (req, res, next) => {
     dishFound.price = price;
     dishFound.number_of_servings = servings;
     dishFound.category = category;
+    dishFound.img = dishImg;
+    
 
     const result = await dishFound.save();
 
@@ -101,7 +104,7 @@ exports.partialUpdate = async (req, res, next) => {
       error.data = errors.array();
       throw error;
     }
-    const { name, price, servings, ingredients, category } = req.body;
+    const { name, price, servings, ingredients, category, dishImg } = req.body;
 
     const dishId = req.params.dishId;
 
@@ -118,6 +121,7 @@ exports.partialUpdate = async (req, res, next) => {
     dishFound.price = price || dishFound.price;
     dishFound.number_of_servings = servings || dishFound.number_of_servings;
     dishFound.category = category || dishFound.category;
+    dishFound.img = dishImg || dishFound.img;
 
     const result = await dishFound.save();
 

@@ -5,8 +5,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 exports.signup = async (req, res, next) => {
-  const { email, password } = req.body;
-  console.log(email, password);
+  const { email, password, name, phoneNumber } = req.body;
+  
   try {
     //Catch possibles errors from route validations using express-validator
     const errors = validationResult(req);
@@ -20,7 +20,7 @@ exports.signup = async (req, res, next) => {
 
     //Catch the user role sent from the client: ADMIN || WAITER
     const isAdmin = req.query.isAdmin;
-
+    console.log(isAdmin)
     const userExist = await userModel.findOne({ where: { email: email } });
 
     if (userExist) {
@@ -30,13 +30,15 @@ exports.signup = async (req, res, next) => {
     }
 
     const passwordHashed = await bcrypt.hashSync(password, 12);
-    console.log(isAdmin);
-    const userRole = isAdmin == true ? ROLES.ADMIN_ROLE : ROLES.WAITER_ROLE;
+    
+    const userRole = isAdmin ? ROLES.ADMIN_ROLE : ROLES.WAITER_ROLE;
 
     const user = await userModel.create({
       email: email,
       password: passwordHashed,
       role: userRole,
+      name: name,
+      phoneNumber: phoneNumber
     });
 
     res.status(201).json({
@@ -95,6 +97,9 @@ exports.login = async (req, res, next) => {
       ok: true,
       token,
       userId: userExist.id,
+      email: userExist.email,
+      name: userExist.name,
+      role: userExist.role,
     });
   } catch (error) {
     if (!error.statusCode) {

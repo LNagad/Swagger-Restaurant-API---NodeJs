@@ -19,6 +19,10 @@ const Dishes = sequelize.define("dishes", {
     type: DataTypes.ENUM(...Object.values(DISH_CATEGORY)),
     allowNull: false,
   },
+  img: {
+    type: DataTypes.STRING,
+    allowNull: true
+  }
   //   ingredients,
 });
 module.exports = Dishes;

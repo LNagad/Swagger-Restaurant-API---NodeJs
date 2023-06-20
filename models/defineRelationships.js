@@ -17,7 +17,7 @@ const defineRelationships = async () => {
   dishes.belongsToMany(order, { through: "DishOrder" });
   order.belongsToMany(dishes, { through: "DishOrder" });
 
-  await sequelize.sync({ alter: false });
+  await sequelize.sync({ alter: true });
 };
 
 module.exports = defineRelationships;

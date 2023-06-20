@@ -3,6 +3,14 @@ const { DataTypes } = require("sequelize");
 const ROLES = require("../enums/roles");
 
 const User = sequelize.define("users", {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  phoneNumber: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: false,

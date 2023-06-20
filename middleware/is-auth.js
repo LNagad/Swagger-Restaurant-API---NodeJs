@@ -16,7 +16,7 @@ exports.isAuth = async (req, res, next) => {
     let decodedToken;
 
     const token = authHeader.split(" ")[1];
-
+    
     decodedToken = await jwt.verify(token, "secret");
 
     if (!decodedToken) {
