@@ -1,8 +1,54 @@
+const { Op } = require('sequelize')
+const { validationResult } = require("express-validator");
+
 const Orders = require("../models/order");
 const Dishes = require("../models/dish");
-const { validationResult } = require("express-validator");
+
 const TABLE_STATUS = require("../enums/tableStatus");
 const ORDER_STATUS = require("../enums/orderStatus");
+
+exports.getAllWeek = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      const error = new Error("Validations failed");
+      error.statusCode = 400;
+      error.data = errors.array();
+      throw error;
+    }
+
+    // Obtener la fecha actual
+    const currentDate = new Date();
+    // Restar 7 días a la fecha actual
+    const sevenDaysAgo = new Date(currentDate.setDate(currentDate.getDate() - 7));
+
+    const result = await Orders.findAll({
+      // Filtrar los registros por fecha
+      where: {
+        createdAt: {
+          [Op.gte]: sevenDaysAgo,
+        },
+      },
+    });
+
+    const resultMapped = await Promise.all(
+      result.map(async (p) => {
+        return {
+          ...p.dataValues,
+          dishes: await p.getDishes(),
+        };
+      })
+    );
+
+    res.status(200).json({
+      ok: true,
+      result: resultMapped,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -80,7 +126,7 @@ exports.create = async (req, res, next) => {
     }
 
     const { tableId, dishes } = req.body;
-
+    console.log({ tableId, dishes } )
     const order = await Orders.create({
       subtotal: 1,
       tableId: tableId,

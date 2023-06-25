@@ -1,17 +1,27 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+const multer = require('multer')
 
 const { authenticateDb } = require("./database/authenticateDb");
-const bodyParser = require("body-parser");
 
 const authRoutes = require("./routes/auth");
 const ingredientsRoute = require("./routes/ingredients");
 const dishesRoute = require("./routes/dishes");
 const tablesRoute = require("./routes/tables");
 const ordersRoute = require("./routes/orders");
-
 const app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+// Configurar multer
+const upload = multer().single('img');
+
+app.use((req, res, next) => {
+  upload(req, res, (err) => {
+  
+    next();
+  });
+});
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");

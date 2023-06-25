@@ -2,14 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 const { body } = require("express-validator");
-const { isAuth, isWaiter } = require("../middleware/is-auth");
+const { isAuth, isWaiter, isAdmin } = require("../middleware/is-auth");
 const { notEmptyFields } = require("../helpers/routesValidationFields");
 
 const ordersController = require("../controllers/ordersController");
 
-router.get("/orders", isAuth, isWaiter, ordersController.getAll);
+router.get("/orders", isAuth, ordersController.getAll);
+router.get("/orders/week", isAuth, ordersController.getAllWeek);
 
-router.get("/orders/:dishId", isAuth, isWaiter, ordersController.getById);
+router.get("/orders/:dishId", isAuth, ordersController.getById);
 
 router.post(
   "/orders",

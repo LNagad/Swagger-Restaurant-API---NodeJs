@@ -6,12 +6,11 @@ const { isAuth, isAdmin } = require("../middleware/is-auth");
 
 const ingredientsController = require("../controllers/ingredientsController");
 
-router.get("/ingredients", isAuth, isAdmin, ingredientsController.getAll);
+router.get("/ingredients", isAuth, ingredientsController.getAll);
 
 router.get(
   "/ingredients/:ingredientId",
   isAuth,
-  isAdmin,
   ingredientsController.getById
 );
 

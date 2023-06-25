@@ -1,8 +1,35 @@
+const cloudinary = require('cloudinary')
+const { validationResult } = require("express-validator");
 const dishes = require("../models/dish");
 const Ingredients = require("../models/ingredient");
-const { validationResult } = require("express-validator");
 
-exports.create = async (req, res, next) => {
+require('dotenv').config()
+
+cloudinary.config({ 
+  cloud_name: process.env.CLOUD_NAME, 
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET
+});
+
+const uploadBufferToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      upload_preset: 'restaurantAPI',
+      file: { buffer },
+    };
+
+    cloudinary.v2.uploader.upload_stream(options, (error, result) => {
+      if (error) {
+        console.error('Error al subir la imagen a Cloudinary:', error);
+        reject(error);
+      } else {
+        resolve(result.secure_url);
+      }
+    }).end(buffer);
+  });
+};
+
+exports.tryFile = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
@@ -13,23 +40,60 @@ exports.create = async (req, res, next) => {
       throw error;
     }
 
-    const { name, price, servings, ingredients, category, dishImg } = req.body;
+    if (!req.file) {
+      const error = new Error("No Image picked");
+      error.statusCode = 400;
+      throw error;
+    }
 
+    const { name, price, servings, ingredients, category, dishImg } = req.body;
+    console.log({ name, price, servings, ingredients, category, dishImg })
+    
+
+  const cloudResp = await uploadBufferToCloudinary(req.file.buffer)
+    console.log(cloudResp)
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.create = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    const { file} = req;
+
+    if (!errors.isEmpty()) {
+      const error = new Error("Validations failed");
+      error.statusCode = 400;
+      error.data = errors.array();
+      throw error;
+    }
+    
+    if (!file) {
+      const error = new Error("No Image picked");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const { name, price, servings, ingredients, category } = req.body;
+   
+    const formattedIngredients = ingredients.replace(/[\[\]]/g, ''); // Eliminar corchetes '[' y ']' de la cadena
+    const ingredientsArray = formattedIngredients.split(',').map((ingredient) => parseInt(ingredient));
+    
     const result = await dishes.create({
       name,
       price,
       number_of_servings: servings,
       category,
-      img: dishImg
     });
 
-    // Guardar los ingredientes relacionados con el plato
-
     const foundIngredients = await Ingredients.findAll({
-      where: { id: ingredients },
+      where: { id: ingredientsArray },
     });
 
     await result.addIngredients(foundIngredients);
+    result.img =  await uploadBufferToCloudinary(file.buffer)
+    await result.save()
 
     result.ingredients = await result.getIngredients({ raw: true });
 

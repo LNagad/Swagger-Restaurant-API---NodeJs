@@ -6,9 +6,9 @@ const { notEmptyFields } = require("../helpers/routesValidationFields");
 
 const tablesController = require("../controllers/tablesController");
 
-router.get("/tables", isAuth, isAdmin, tablesController.getAll);
+router.get("/tables", isAuth, tablesController.getAll);
 
-router.get("/tables/:tableId", isAuth, isAdmin, tablesController.getById);
+router.get("/tables/:tableId", isAuth, tablesController.getById);
 
 router.post(
   "/tables",
