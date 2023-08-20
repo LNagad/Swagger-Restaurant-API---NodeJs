@@ -299,7 +299,8 @@ exports.delete = async (req, res, next) => {
       error.data = errors.array();
       throw error;
     }
-    await dishFound.removeDishes();
+    console.log(dishFound)
+    // await dishFound.removeDishes();
 
     await dishFound.destroy();
 
