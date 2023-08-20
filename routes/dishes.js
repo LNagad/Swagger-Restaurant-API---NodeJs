@@ -59,6 +59,13 @@ router.put(
   dishesController.update
 );
 
+router.delete(
+  "/dishes/:dishId",
+  isAuth,
+  isAdmin,
+  dishesController.delete
+);
+
 router.patch(
   "/dishes/:dishId/partial",
   isAuth,

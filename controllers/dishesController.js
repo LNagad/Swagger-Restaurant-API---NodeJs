@@ -275,3 +275,35 @@ exports.getById = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+exports.delete = async (req, res, next) => {
+  try {
+
+    const dishId = req.params.dishId;
+
+    if (!dishId) {
+      const error = new Error("Invalid dish id.");
+      error.statusCode = 404;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const dishFound = await Orders.findByPk(dishId);
+
+    if (!dishFound) {
+      const error = new Error("Dish was not found.");
+      error.statusCode = 404;
+      error.data = errors.array();
+      throw error;
+    }
+    await dishFound.removeDishes();
+
+    await dishFound.destroy();
+
+    res.status(204).json();
+  } catch (error) {
+    next(error);
+  }
+};
