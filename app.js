@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require('multer')
@@ -53,7 +55,7 @@ app.use((error, req, res, next) => {
   res.status(statusCode).json({ message, data, statusCode });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 authenticateDb()
   .then(() => {
     app.listen(PORT);
