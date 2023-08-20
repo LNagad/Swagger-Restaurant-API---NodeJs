@@ -291,7 +291,7 @@ exports.delete = async (req, res, next) => {
       throw error;
     }
 
-    const dishFound = await Orders.findByPk(dishId);
+    const dishFound = await dishes.findByPk(dishId);
 
     if (!dishFound) {
       const error = new Error("Dish was not found.");
