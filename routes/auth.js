@@ -14,7 +14,7 @@ router.post('/verify-token', isAuth, (req, res) => {
 router.post(
   "/signup",
   [
-    query("isAdmin").exists().withMessage("The user role needs to be sent"),
+    // query("isAdmin").exists().withMessage("The user role needs to be sent"),
 
     body("name")
     .trim()
