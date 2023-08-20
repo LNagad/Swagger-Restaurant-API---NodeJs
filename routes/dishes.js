@@ -24,12 +24,6 @@ const ingredientsValidation = () => {
 router.get("/dishes", isAuth, dishesController.getAll);
 router.get("/dishes/:dishId", isAuth, dishesController.getById);
 
-//! DELETE THIS IMPLEMENTATION
-router.post(
-  "/dishes/try",
- dishesController.tryFile
-);
-
 router.post(
   "/dishes",
   isAuth,
